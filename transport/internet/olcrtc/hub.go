@@ -57,7 +57,7 @@ func (l *Listener) acceptLoop(ctx context.Context, manager *olclib.Manager, hand
 			time.Sleep(500 * time.Millisecond)
 			continue
 		}
-		go handler(conn)
+		go handler(&addrConn{Conn: conn})
 	}
 }
 
@@ -76,6 +76,18 @@ type olcrtcAddr string
 
 func (a olcrtcAddr) Network() string { return "olcrtc" }
 func (a olcrtcAddr) String() string  { return string(a) }
+
+type addrConn struct {
+	net.Conn
+}
+
+func (c *addrConn) LocalAddr() net.Addr {
+	return &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 24444}
+}
+
+func (c *addrConn) RemoteAddr() net.Addr {
+	return &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 0}
+}
 
 func init() {
 	common.Must(internet.RegisterTransportListener(protocolName, ListenTCP))
