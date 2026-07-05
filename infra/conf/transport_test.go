@@ -5,9 +5,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/xtls/xray-core/common/serial"
 	. "github.com/xtls/xray-core/infra/conf"
 	"github.com/xtls/xray-core/transport/internet"
 	finalmaskcustom "github.com/xtls/xray-core/transport/internet/finalmask/header/custom"
+	"github.com/xtls/xray-core/transport/internet/olcrtc"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -156,6 +158,77 @@ func TestSocketConfig(t *testing.T) {
 	})
 	if expectedOutput.ParseTFOValue() != -1 {
 		t.Fatalf("unexpected parsed TFO value, which should be -1")
+	}
+}
+
+func TestStreamConfigOLCRTCBuild(t *testing.T) {
+	parser := func(s string) (proto.Message, error) {
+		config := new(StreamConfig)
+		if err := json.Unmarshal([]byte(s), config); err != nil {
+			return nil, err
+		}
+		return config.Build()
+	}
+
+	expected := &internet.StreamConfig{
+		ProtocolName: "olcrtc",
+		TransportSettings: []*internet.TransportConfig{
+			{
+				ProtocolName: "olcrtc",
+				Settings: serial.ToTypedMessage(&olcrtc.Config{
+					Auth:           "jitsi",
+					RoomId:         "https://meet.example/room",
+					Engine:         "jitsi",
+					Url:            "https://meet.example",
+					Token:          "token",
+					Name:           "xray-client",
+					DnsServer:      "8.8.8.8:53",
+					ProxyAddr:      "127.0.0.1",
+					ProxyPort:      1080,
+					DatagramBuffer: 64,
+				}),
+			},
+		},
+	}
+
+	runMultiTestCase(t, []TestCase{
+		{
+			Input: `{
+				"network": "olcrtc",
+				"security": "none",
+				"olcrtcSettings": {
+					"auth": "jitsi",
+					"roomId": "https://meet.example/room",
+					"engine": "jitsi",
+					"url": "https://meet.example",
+					"token": "token",
+					"name": "xray-client",
+					"dnsServer": "8.8.8.8:53",
+					"proxyAddr": "127.0.0.1",
+					"proxyPort": 1080,
+					"datagramBuffer": 64
+				}
+			}`,
+			Parser: parser,
+			Output: expected,
+		},
+	})
+}
+
+func TestStreamConfigOLCRTCRejectsTLS(t *testing.T) {
+	var config StreamConfig
+	if err := json.Unmarshal([]byte(`{
+		"network": "olcrtc",
+		"security": "tls",
+		"olcrtcSettings": {
+			"auth": "jitsi",
+			"roomId": "https://meet.example/room"
+		}
+	}`), &config); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := config.Build(); err == nil || !strings.Contains(err.Error(), "security \"none\"") {
+		t.Fatalf("Build() error = %v, want olcRTC security none error", err)
 	}
 }
 

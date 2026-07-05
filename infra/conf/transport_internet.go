@@ -37,6 +37,7 @@ import (
 	"github.com/xtls/xray-core/transport/internet/hysteria"
 	"github.com/xtls/xray-core/transport/internet/hysteria/congestion/bbr"
 	"github.com/xtls/xray-core/transport/internet/kcp"
+	"github.com/xtls/xray-core/transport/internet/olcrtc"
 	"github.com/xtls/xray-core/transport/internet/reality"
 	"github.com/xtls/xray-core/transport/internet/splithttp"
 	"github.com/xtls/xray-core/transport/internet/tcp"
@@ -1025,9 +1026,43 @@ func (p TransportProtocol) Build() (string, error) {
 		return "", errors.PrintRemovedFeatureError("QUIC transport (without web service, etc.)", "XHTTP stream-one H3")
 	case "hysteria":
 		return "hysteria", nil
+	case "olcrtc":
+		return "olcrtc", nil
 	default:
 		return "", errors.New("Config: unknown transport protocol: ", p)
 	}
+}
+
+type OLCRTCConfig struct {
+	Auth           string `json:"auth"`
+	RoomID         string `json:"roomId"`
+	Engine         string `json:"engine"`
+	URL            string `json:"url"`
+	Token          string `json:"token"`
+	Name           string `json:"name"`
+	DNSServer      string `json:"dnsServer"`
+	ProxyAddr      string `json:"proxyAddr"`
+	ProxyPort      uint32 `json:"proxyPort"`
+	DatagramBuffer uint32 `json:"datagramBuffer"`
+}
+
+// Build implements Buildable.
+func (c *OLCRTCConfig) Build() (proto.Message, error) {
+	if c == nil {
+		return nil, errors.New("olcRTC config is nil")
+	}
+	return &olcrtc.Config{
+		Auth:           c.Auth,
+		RoomId:         c.RoomID,
+		Engine:         c.Engine,
+		Url:            c.URL,
+		Token:          c.Token,
+		Name:           c.Name,
+		DnsServer:      c.DNSServer,
+		ProxyAddr:      c.ProxyAddr,
+		ProxyPort:      c.ProxyPort,
+		DatagramBuffer: c.DatagramBuffer,
+	}, nil
 }
 
 type CustomSockoptConfig struct {
@@ -2051,6 +2086,7 @@ type StreamConfig struct {
 	WSSettings          *WebSocketConfig   `json:"wsSettings"`
 	HTTPUPGRADESettings *HttpUpgradeConfig `json:"httpupgradeSettings"`
 	HysteriaSettings    *HysteriaConfig    `json:"hysteriaSettings"`
+	OLCRTCSettings      *OLCRTCConfig      `json:"olcrtcSettings"`
 	SocketSettings      *SocketConfig      `json:"sockopt"`
 }
 
@@ -2074,6 +2110,9 @@ func (c *StreamConfig) Build() (*internet.StreamConfig, error) {
 	switch strings.ToLower(c.Security) {
 	case "", "none":
 	case "tls":
+		if config.ProtocolName == "olcrtc" {
+			return nil, errors.New("olcRTC transport currently supports only security \"none\".")
+		}
 		tlsSettings := c.TLSSettings
 		if tlsSettings == nil {
 			tlsSettings = &TLSConfig{}
@@ -2179,6 +2218,16 @@ func (c *StreamConfig) Build() (*internet.StreamConfig, error) {
 		config.TransportSettings = append(config.TransportSettings, &internet.TransportConfig{
 			ProtocolName: "hysteria",
 			Settings:     serial.ToTypedMessage(hs),
+		})
+	}
+	if c.OLCRTCSettings != nil {
+		os, err := c.OLCRTCSettings.Build()
+		if err != nil {
+			return nil, errors.New("Failed to build olcRTC config.").Base(err)
+		}
+		config.TransportSettings = append(config.TransportSettings, &internet.TransportConfig{
+			ProtocolName: "olcrtc",
+			Settings:     serial.ToTypedMessage(os),
 		})
 	}
 	if c.SocketSettings != nil {
