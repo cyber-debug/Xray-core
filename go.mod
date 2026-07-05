@@ -117,4 +117,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/openlibrecommunity/olcrtc => github.com/cyber-debug/olcrtc v0.0.0-20260705181130-b7e3054ed707
+replace github.com/openlibrecommunity/olcrtc => github.com/cyber-debug/olcrtc v0.0.0-20260705182730-8891f217f697
