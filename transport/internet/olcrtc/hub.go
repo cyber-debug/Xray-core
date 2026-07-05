@@ -12,9 +12,10 @@ import (
 )
 
 type Listener struct {
-	cancel context.CancelFunc
-	done   chan struct{}
-	addr   net.Addr
+	cancel  context.CancelFunc
+	done    chan struct{}
+	addr    net.Addr
+	manager *olclib.Manager
 }
 
 func ListenTCP(
@@ -33,19 +34,21 @@ func ListenTCP(
 		return nil, errors.New("invalid olcrtc settings").AtError()
 	}
 	runCtx, cancel := context.WithCancel(ctx)
+	manager := olclib.NewManager(managerConfig(settings, true))
 	l := &Listener{
-		cancel: cancel,
-		done:   make(chan struct{}),
-		addr:   olcrtcAddr("listener"),
+		cancel:  cancel,
+		done:    make(chan struct{}),
+		addr:    olcrtcAddr("listener"),
+		manager: manager,
 	}
-	go l.acceptLoop(runCtx, &sessionManager{cfg: settings}, handler)
+	go l.acceptLoop(runCtx, manager, handler)
 	return l, nil
 }
 
-func (l *Listener) acceptLoop(ctx context.Context, manager *sessionManager, handler internet.ConnHandler) {
+func (l *Listener) acceptLoop(ctx context.Context, manager *olclib.Manager, handler internet.ConnHandler) {
 	defer close(l.done)
 	for ctx.Err() == nil {
-		conn, err := manager.acceptStream(ctx)
+		conn, err := manager.AcceptStream(ctx)
 		if err != nil {
 			if ctx.Err() != nil {
 				return
@@ -64,8 +67,9 @@ func (l *Listener) Addr() net.Addr {
 
 func (l *Listener) Close() error {
 	l.cancel()
+	err := l.manager.Close()
 	<-l.done
-	return nil
+	return err
 }
 
 type olcrtcAddr string

@@ -24,9 +24,13 @@ func Dial(ctx context.Context, _ net.Destination, streamSettings *internet.Memor
 		return nil, errors.New("invalid olcrtc settings").AtError()
 	}
 	key := configKey(settings)
-	raw, _ := dialManagers.LoadOrStore(key, &sessionManager{cfg: settings})
-	manager := raw.(*sessionManager)
-	return manager.openStream(ctx, false)
+	raw, _ := dialManagers.LoadOrStore(key, olclib.NewManager(managerConfig(settings, false)))
+	manager := raw.(*olclib.Manager)
+	conn, err := manager.OpenStream(ctx)
+	if err != nil {
+		return nil, errors.New("open olcrtc stream").Base(err)
+	}
+	return stat.Connection(conn), nil
 }
 
 func init() {
