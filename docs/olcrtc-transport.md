@@ -39,10 +39,9 @@ Not supported yet:
 
 Both sides must run a build from this fork, not stock Xray.
 
-The build currently depends on the matching `olcrtc` library branch through the
-local module replacement used during development. For a distributable release,
-publish or tag the `olcrtc` branch first and update `go.mod` to use that module
-version instead of a local `replace`.
+The build currently pins `github.com/openlibrecommunity/olcrtc` to the matching
+`github.com/cyber-debug/olcrtc` fork commit in `go.mod`. Update that pseudo
+version whenever the olcRTC transport library changes.
 
 Both peers must know the same room/profile details. Start the server-side Xray
 first, then start the client-side Xray.
