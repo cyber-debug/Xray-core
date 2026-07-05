@@ -15,6 +15,16 @@ VLESS
           -> WebRTC/SFU room
 ```
 
+UDP dial path:
+
+```text
+Xray UDP dial
+  -> olcrtc PacketConnWrapper
+    -> olcRTC Manager datagrams
+      -> persistent olcRTC carrier session
+        -> WebRTC/SFU room
+```
+
 ## Status
 
 This is a custom-build feature. It is not part of upstream Xray.
@@ -27,11 +37,12 @@ Supported now:
 - `profiles[]` failover for new streams
 - `maxConcurrentStreams`
 - client-side `Dial()` and server-side `ListenTCP()` adapter support
+- low-level Xray UDP dial support through an olcRTC `PacketConnWrapper`
 
 Not supported yet:
 
 - `security: "tls"` or `security: "reality"` over `olcrtc`
-- UDP/XUDP through native Xray transport
+- stock Xray or stock mobile clients
 - seamless migration of already-open TCP streams after a room/provider failure
 - live-room guarantee without testing the selected SFU/provider
 
@@ -155,7 +166,7 @@ Replace:
       "port": 10808,
       "protocol": "socks",
       "settings": {
-        "udp": false
+        "udp": true
       }
     }
   ],

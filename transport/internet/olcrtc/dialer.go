@@ -14,7 +14,7 @@ import (
 
 var dialManagers sync.Map
 
-func Dial(ctx context.Context, _ net.Destination, streamSettings *internet.MemoryStreamConfig) (stat.Connection, error) {
+func Dial(ctx context.Context, dest net.Destination, streamSettings *internet.MemoryStreamConfig) (stat.Connection, error) {
 	olclib.RegisterDefaults()
 	if streamSettings == nil {
 		return nil, errors.New("missing olcrtc stream settings").AtError()
@@ -26,6 +26,9 @@ func Dial(ctx context.Context, _ net.Destination, streamSettings *internet.Memor
 	key := configKey(settings)
 	raw, _ := dialManagers.LoadOrStore(key, olclib.NewManager(managerConfig(settings, false)))
 	manager := raw.(*olclib.Manager)
+	if dest.Network == net.Network_UDP {
+		return newPacketConnection(ctx, manager, dest), nil
+	}
 	conn, err := manager.OpenStream(ctx)
 	if err != nil {
 		return nil, errors.New("open olcrtc stream").Base(err)
