@@ -176,16 +176,26 @@ func TestStreamConfigOLCRTCBuild(t *testing.T) {
 			{
 				ProtocolName: "olcrtc",
 				Settings: serial.ToTypedMessage(&olcrtc.Config{
-					Auth:           "jitsi",
-					RoomId:         "https://meet.example/room",
-					Engine:         "jitsi",
-					Url:            "https://meet.example",
-					Token:          "token",
-					Name:           "xray-client",
-					DnsServer:      "8.8.8.8:53",
-					ProxyAddr:      "127.0.0.1",
-					ProxyPort:      1080,
-					DatagramBuffer: 64,
+					Auth:                 "jitsi",
+					RoomId:               "https://meet.example/room",
+					Engine:               "jitsi",
+					Url:                  "https://meet.example",
+					Token:                "token",
+					Name:                 "xray-client",
+					DnsServer:            "8.8.8.8:53",
+					ProxyAddr:            "127.0.0.1",
+					ProxyPort:            1080,
+					DatagramBuffer:       64,
+					MaxConcurrentStreams: 32,
+					Profiles: []*olcrtc.Profile{
+						{
+							Auth:           "jitsi",
+							RoomId:         "https://meet.example/fallback",
+							Name:           "xray-fallback",
+							DnsServer:      "1.1.1.1:53",
+							DatagramBuffer: 32,
+						},
+					},
 				}),
 			},
 		},
@@ -206,7 +216,17 @@ func TestStreamConfigOLCRTCBuild(t *testing.T) {
 					"dnsServer": "8.8.8.8:53",
 					"proxyAddr": "127.0.0.1",
 					"proxyPort": 1080,
-					"datagramBuffer": 64
+					"datagramBuffer": 64,
+					"maxConcurrentStreams": 32,
+					"profiles": [
+						{
+							"auth": "jitsi",
+							"roomId": "https://meet.example/fallback",
+							"name": "xray-fallback",
+							"dnsServer": "1.1.1.1:53",
+							"datagramBuffer": 32
+						}
+					]
 				}
 			}`,
 			Parser: parser,

@@ -22,19 +22,21 @@ const (
 )
 
 type Config struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Auth           string                 `protobuf:"bytes,1,opt,name=auth,proto3" json:"auth,omitempty"`
-	RoomId         string                 `protobuf:"bytes,2,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
-	Engine         string                 `protobuf:"bytes,3,opt,name=engine,proto3" json:"engine,omitempty"`
-	Url            string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
-	Token          string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
-	Name           string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
-	DnsServer      string                 `protobuf:"bytes,7,opt,name=dns_server,json=dnsServer,proto3" json:"dns_server,omitempty"`
-	ProxyAddr      string                 `protobuf:"bytes,8,opt,name=proxy_addr,json=proxyAddr,proto3" json:"proxy_addr,omitempty"`
-	ProxyPort      uint32                 `protobuf:"varint,9,opt,name=proxy_port,json=proxyPort,proto3" json:"proxy_port,omitempty"`
-	DatagramBuffer uint32                 `protobuf:"varint,10,opt,name=datagram_buffer,json=datagramBuffer,proto3" json:"datagram_buffer,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Auth                 string                 `protobuf:"bytes,1,opt,name=auth,proto3" json:"auth,omitempty"`
+	RoomId               string                 `protobuf:"bytes,2,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
+	Engine               string                 `protobuf:"bytes,3,opt,name=engine,proto3" json:"engine,omitempty"`
+	Url                  string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
+	Token                string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
+	Name                 string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	DnsServer            string                 `protobuf:"bytes,7,opt,name=dns_server,json=dnsServer,proto3" json:"dns_server,omitempty"`
+	ProxyAddr            string                 `protobuf:"bytes,8,opt,name=proxy_addr,json=proxyAddr,proto3" json:"proxy_addr,omitempty"`
+	ProxyPort            uint32                 `protobuf:"varint,9,opt,name=proxy_port,json=proxyPort,proto3" json:"proxy_port,omitempty"`
+	DatagramBuffer       uint32                 `protobuf:"varint,10,opt,name=datagram_buffer,json=datagramBuffer,proto3" json:"datagram_buffer,omitempty"`
+	Profiles             []*Profile             `protobuf:"bytes,11,rep,name=profiles,proto3" json:"profiles,omitempty"`
+	MaxConcurrentStreams uint32                 `protobuf:"varint,12,opt,name=max_concurrent_streams,json=maxConcurrentStreams,proto3" json:"max_concurrent_streams,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *Config) Reset() {
@@ -137,12 +139,159 @@ func (x *Config) GetDatagramBuffer() uint32 {
 	return 0
 }
 
+func (x *Config) GetProfiles() []*Profile {
+	if x != nil {
+		return x.Profiles
+	}
+	return nil
+}
+
+func (x *Config) GetMaxConcurrentStreams() uint32 {
+	if x != nil {
+		return x.MaxConcurrentStreams
+	}
+	return 0
+}
+
+type Profile struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Auth           string                 `protobuf:"bytes,1,opt,name=auth,proto3" json:"auth,omitempty"`
+	RoomId         string                 `protobuf:"bytes,2,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
+	Engine         string                 `protobuf:"bytes,3,opt,name=engine,proto3" json:"engine,omitempty"`
+	Url            string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
+	Token          string                 `protobuf:"bytes,5,opt,name=token,proto3" json:"token,omitempty"`
+	Name           string                 `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	DnsServer      string                 `protobuf:"bytes,7,opt,name=dns_server,json=dnsServer,proto3" json:"dns_server,omitempty"`
+	ProxyAddr      string                 `protobuf:"bytes,8,opt,name=proxy_addr,json=proxyAddr,proto3" json:"proxy_addr,omitempty"`
+	ProxyPort      uint32                 `protobuf:"varint,9,opt,name=proxy_port,json=proxyPort,proto3" json:"proxy_port,omitempty"`
+	DatagramBuffer uint32                 `protobuf:"varint,10,opt,name=datagram_buffer,json=datagramBuffer,proto3" json:"datagram_buffer,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Profile) Reset() {
+	*x = Profile{}
+	mi := &file_transport_internet_olcrtc_config_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Profile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Profile) ProtoMessage() {}
+
+func (x *Profile) ProtoReflect() protoreflect.Message {
+	mi := &file_transport_internet_olcrtc_config_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Profile.ProtoReflect.Descriptor instead.
+func (*Profile) Descriptor() ([]byte, []int) {
+	return file_transport_internet_olcrtc_config_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Profile) GetAuth() string {
+	if x != nil {
+		return x.Auth
+	}
+	return ""
+}
+
+func (x *Profile) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *Profile) GetEngine() string {
+	if x != nil {
+		return x.Engine
+	}
+	return ""
+}
+
+func (x *Profile) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *Profile) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *Profile) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Profile) GetDnsServer() string {
+	if x != nil {
+		return x.DnsServer
+	}
+	return ""
+}
+
+func (x *Profile) GetProxyAddr() string {
+	if x != nil {
+		return x.ProxyAddr
+	}
+	return ""
+}
+
+func (x *Profile) GetProxyPort() uint32 {
+	if x != nil {
+		return x.ProxyPort
+	}
+	return 0
+}
+
+func (x *Profile) GetDatagramBuffer() uint32 {
+	if x != nil {
+		return x.DatagramBuffer
+	}
+	return 0
+}
+
 var File_transport_internet_olcrtc_config_proto protoreflect.FileDescriptor
 
 const file_transport_internet_olcrtc_config_proto_rawDesc = "" +
 	"\n" +
-	"&transport/internet/olcrtc/config.proto\x12\x1exray.transport.internet.olcrtc\"\x8f\x02\n" +
+	"&transport/internet/olcrtc/config.proto\x12\x1exray.transport.internet.olcrtc\"\x8a\x03\n" +
 	"\x06Config\x12\x12\n" +
+	"\x04auth\x18\x01 \x01(\tR\x04auth\x12\x17\n" +
+	"\aroom_id\x18\x02 \x01(\tR\x06roomId\x12\x16\n" +
+	"\x06engine\x18\x03 \x01(\tR\x06engine\x12\x10\n" +
+	"\x03url\x18\x04 \x01(\tR\x03url\x12\x14\n" +
+	"\x05token\x18\x05 \x01(\tR\x05token\x12\x12\n" +
+	"\x04name\x18\x06 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"dns_server\x18\a \x01(\tR\tdnsServer\x12\x1d\n" +
+	"\n" +
+	"proxy_addr\x18\b \x01(\tR\tproxyAddr\x12\x1d\n" +
+	"\n" +
+	"proxy_port\x18\t \x01(\rR\tproxyPort\x12'\n" +
+	"\x0fdatagram_buffer\x18\n" +
+	" \x01(\rR\x0edatagramBuffer\x12C\n" +
+	"\bprofiles\x18\v \x03(\v2'.xray.transport.internet.olcrtc.ProfileR\bprofiles\x124\n" +
+	"\x16max_concurrent_streams\x18\f \x01(\rR\x14maxConcurrentStreams\"\x90\x02\n" +
+	"\aProfile\x12\x12\n" +
 	"\x04auth\x18\x01 \x01(\tR\x04auth\x12\x17\n" +
 	"\aroom_id\x18\x02 \x01(\tR\x06roomId\x12\x16\n" +
 	"\x06engine\x18\x03 \x01(\tR\x06engine\x12\x10\n" +
@@ -171,16 +320,18 @@ func file_transport_internet_olcrtc_config_proto_rawDescGZIP() []byte {
 	return file_transport_internet_olcrtc_config_proto_rawDescData
 }
 
-var file_transport_internet_olcrtc_config_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_transport_internet_olcrtc_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_transport_internet_olcrtc_config_proto_goTypes = []any{
-	(*Config)(nil), // 0: xray.transport.internet.olcrtc.Config
+	(*Config)(nil),  // 0: xray.transport.internet.olcrtc.Config
+	(*Profile)(nil), // 1: xray.transport.internet.olcrtc.Profile
 }
 var file_transport_internet_olcrtc_config_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: xray.transport.internet.olcrtc.Config.profiles:type_name -> xray.transport.internet.olcrtc.Profile
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_transport_internet_olcrtc_config_proto_init() }
@@ -194,7 +345,7 @@ func file_transport_internet_olcrtc_config_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_transport_internet_olcrtc_config_proto_rawDesc), len(file_transport_internet_olcrtc_config_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

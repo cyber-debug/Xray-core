@@ -1034,6 +1034,21 @@ func (p TransportProtocol) Build() (string, error) {
 }
 
 type OLCRTCConfig struct {
+	Auth                 string                `json:"auth"`
+	RoomID               string                `json:"roomId"`
+	Engine               string                `json:"engine"`
+	URL                  string                `json:"url"`
+	Token                string                `json:"token"`
+	Name                 string                `json:"name"`
+	DNSServer            string                `json:"dnsServer"`
+	ProxyAddr            string                `json:"proxyAddr"`
+	ProxyPort            uint32                `json:"proxyPort"`
+	DatagramBuffer       uint32                `json:"datagramBuffer"`
+	Profiles             []OLCRTCProfileConfig `json:"profiles"`
+	MaxConcurrentStreams uint32                `json:"maxConcurrentStreams"`
+}
+
+type OLCRTCProfileConfig struct {
 	Auth           string `json:"auth"`
 	RoomID         string `json:"roomId"`
 	Engine         string `json:"engine"`
@@ -1051,17 +1066,34 @@ func (c *OLCRTCConfig) Build() (proto.Message, error) {
 	if c == nil {
 		return nil, errors.New("olcRTC config is nil")
 	}
+	profiles := make([]*olcrtc.Profile, 0, len(c.Profiles))
+	for _, profile := range c.Profiles {
+		profiles = append(profiles, &olcrtc.Profile{
+			Auth:           profile.Auth,
+			RoomId:         profile.RoomID,
+			Engine:         profile.Engine,
+			Url:            profile.URL,
+			Token:          profile.Token,
+			Name:           profile.Name,
+			DnsServer:      profile.DNSServer,
+			ProxyAddr:      profile.ProxyAddr,
+			ProxyPort:      profile.ProxyPort,
+			DatagramBuffer: profile.DatagramBuffer,
+		})
+	}
 	return &olcrtc.Config{
-		Auth:           c.Auth,
-		RoomId:         c.RoomID,
-		Engine:         c.Engine,
-		Url:            c.URL,
-		Token:          c.Token,
-		Name:           c.Name,
-		DnsServer:      c.DNSServer,
-		ProxyAddr:      c.ProxyAddr,
-		ProxyPort:      c.ProxyPort,
-		DatagramBuffer: c.DatagramBuffer,
+		Auth:                 c.Auth,
+		RoomId:               c.RoomID,
+		Engine:               c.Engine,
+		Url:                  c.URL,
+		Token:                c.Token,
+		Name:                 c.Name,
+		DnsServer:            c.DNSServer,
+		ProxyAddr:            c.ProxyAddr,
+		ProxyPort:            c.ProxyPort,
+		DatagramBuffer:       c.DatagramBuffer,
+		Profiles:             profiles,
+		MaxConcurrentStreams: c.MaxConcurrentStreams,
 	}, nil
 }
 

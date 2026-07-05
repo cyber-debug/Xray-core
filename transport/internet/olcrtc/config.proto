@@ -17,4 +17,19 @@ message Config {
   string proxy_addr = 8;
   uint32 proxy_port = 9;
   uint32 datagram_buffer = 10;
+  repeated Profile profiles = 11;
+  uint32 max_concurrent_streams = 12;
+}
+
+message Profile {
+  string auth = 1;
+  string room_id = 2;
+  string engine = 3;
+  string url = 4;
+  string token = 5;
+  string name = 6;
+  string dns_server = 7;
+  string proxy_addr = 8;
+  uint32 proxy_port = 9;
+  uint32 datagram_buffer = 10;
 }
